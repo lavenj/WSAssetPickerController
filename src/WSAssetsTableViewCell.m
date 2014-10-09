@@ -104,24 +104,24 @@
 	_cellAssetViews = columns;
 }
 
-#define ASSET_VIEW_FRAME CGRectMake(0, 0, 75, 75)
+#define WS_ASSET_VIEW_FRAME CGRectMake(0, 0, 75, 75)
 #define ASSET_VIEW_PADDING 4
 
 - (void)layoutSubviews
 {
 	// Calculate the container's width.
-	int assetsPerRow = self.frame.size.width / ASSET_VIEW_FRAME.size.width;
-	float containerWidth = assetsPerRow * ASSET_VIEW_FRAME.size.width + (assetsPerRow - 1) * ASSET_VIEW_PADDING;
+	int assetsPerRow = self.frame.size.width / WS_ASSET_VIEW_FRAME.size.width;
+	float containerWidth = assetsPerRow * WS_ASSET_VIEW_FRAME.size.width + (assetsPerRow - 1) * ASSET_VIEW_PADDING;
 
 	// Create the container frame dynamically.
 	CGRect containerFrame;
 	containerFrame.origin.x = (self.frame.size.width - containerWidth) / 2;
-	containerFrame.origin.y = (self.frame.size.height - ASSET_VIEW_FRAME.size.height) / 2;
+	containerFrame.origin.y = (self.frame.size.height - WS_ASSET_VIEW_FRAME.size.height) / 2;
 	containerFrame.size.width = containerWidth;
-	containerFrame.size.height = ASSET_VIEW_FRAME.size.height;
+	containerFrame.size.height = WS_ASSET_VIEW_FRAME.size.height;
 	self.assetsContainerView.frame = containerFrame;
 
-	CGRect frame = ASSET_VIEW_FRAME;
+	CGRect frame = WS_ASSET_VIEW_FRAME;
 
 	for (WSAssetViewColumn *assetView in self.cellAssetViews) {
 

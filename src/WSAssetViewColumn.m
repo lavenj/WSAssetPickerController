@@ -35,8 +35,8 @@
 
 #pragma mark - Initialization
 
-#define ASSET_VIEW_FRAME CGRectMake(0, 0, 75, 75)
-
+#define WS_ASSET_VIEW_FRAME CGRectMake(0, 0, 75, 75)
+#define WS_ASSET_VIEW_VIDEO_BG_HEIGHT 20
 + (WSAssetViewColumn *)assetViewWithImage:(UIImage *)thumbnail isVideo:(BOOL)isVideo {
 	WSAssetViewColumn *assetView = [[WSAssetViewColumn alloc] initWithImage:thumbnail isVideo:isVideo];
 
@@ -45,24 +45,25 @@
 
 - (id)initWithImage:(UIImage *)thumbnail isVideo:(BOOL)isVideo
 {
-	if ((self = [super initWithFrame:ASSET_VIEW_FRAME])) {
+	if ((self = [super initWithFrame:WS_ASSET_VIEW_FRAME])) {
 
 		// Setup a tap gesture.
 		UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(userDidTapAction:)];
 		[self addGestureRecognizer:tapGestureRecognizer];
 
 		// Add the photo thumbnail.
-		UIImageView *assetImageView = [[UIImageView alloc] initWithFrame:ASSET_VIEW_FRAME];
+		UIImageView *assetImageView = [[UIImageView alloc] initWithFrame:WS_ASSET_VIEW_FRAME];
 		assetImageView.contentMode = UIViewContentModeScaleToFill;
 		assetImageView.image = thumbnail;
 		[self addSubview:assetImageView];
 
 		if( isVideo ) {
-			UIView *overlay = [[UIView alloc]initWithFrame:CGRectMake(0, self.bounds.size.height-10, self.bounds.size.width, 10)];
-			overlay.backgroundColor = [UIColor colorWithWhite:0 alpha:0.8];
+
+			UIView *overlay = [[UIView alloc]initWithFrame:CGRectMake(0, self.bounds.size.height-WS_ASSET_VIEW_VIDEO_BG_HEIGHT, self.bounds.size.width, WS_ASSET_VIEW_VIDEO_BG_HEIGHT)];
+			overlay.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
 			[self addSubview:overlay];
 			UIImageView *videoIconImageView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"video-icon-small"]];
-			videoIconImageView.center = CGPointMake(10, 65);
+			videoIconImageView.center = CGPointMake(12, 65);
 			[self addSubview:videoIconImageView];
 		}
 	}
