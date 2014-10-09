@@ -60,7 +60,7 @@
 		if( isVideo ) {
 
 			UIView *overlay = [[UIView alloc]initWithFrame:CGRectMake(0, self.bounds.size.height-WS_ASSET_VIEW_VIDEO_BG_HEIGHT, self.bounds.size.width, WS_ASSET_VIEW_VIDEO_BG_HEIGHT)];
-			overlay.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
+			overlay.backgroundColor = [UIColor colorWithWhite:0 alpha:0.3];
 			[self addSubview:overlay];
 			UIImageView *videoIconImageView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"video-icon-small"]];
 			videoIconImageView.center = CGPointMake(12, 65);
