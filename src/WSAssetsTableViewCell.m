@@ -84,9 +84,11 @@
 
 	for (WSAssetWrapper *assetWrapper in assets) {
 
-		WSAssetViewColumn *assetViewColumn = [[WSAssetViewColumn alloc] initWithImage:[UIImage imageWithCGImage:assetWrapper.asset.thumbnail]];
+		BOOL isVideo = [assetWrapper.asset valueForProperty:ALAssetPropertyType] == ALAssetTypeVideo;
+		WSAssetViewColumn *assetViewColumn = [[WSAssetViewColumn alloc] initWithImage:[UIImage imageWithCGImage:assetWrapper.asset.thumbnail] isVideo:isVideo] ;
 		assetViewColumn.column = [assets indexOfObject:assetWrapper];
 		assetViewColumn.selected = assetWrapper.isSelected;
+
 
 		__weak __typeof__(self) weakSelf = self;
 		[assetViewColumn setShouldSelectItemBlock:^BOOL(NSInteger column) {

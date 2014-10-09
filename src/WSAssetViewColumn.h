@@ -24,9 +24,9 @@
 @property (nonatomic) NSUInteger column;
 @property (nonatomic, getter=isSelected) BOOL selected;
 
-+ (WSAssetViewColumn *)assetViewWithImage:(UIImage *)thumbnail;
++ (WSAssetViewColumn *)assetViewWithImage:(UIImage *)thumbnail isVideo:(BOOL)isVideo;
 
-- (id)initWithImage:(UIImage *)thumbnail;
+- (id)initWithImage:(UIImage *)thumbnail isVideo:(BOOL)isVideo;
 
 - (void)setShouldSelectItemBlock:(BOOL(^)(NSInteger column))shouldSelectItemBlock;
 

@@ -1,7 +1,7 @@
 Pod::Spec.new do|s|
     s.name = "WSAssetPickerController"
 	s.platform = :ios, 5.0
-    s.version = "0.2.0"
+    s.version = "0.3.0"
     s.author = "Wes Smith"
     s.license = { :type => "Apache License, Version 2.0", :file => "LICENSE" }
     s.homepage = "https://github.com/w5mith/WSAssetPickerController"
@@ -11,5 +11,5 @@ Pod::Spec.new do|s|
     s.source_files = "src/*.{h,m}"
     s.framework = "QuartzCore", "AssetsLibrary", "UIKit", "CoreGraphics"
     s.requires_arc = true
-    s.resources = "demo/WSAssetViewSelectionIndicator.png","demo/WSAssetViewSelectionIndicator@2x.png"
+    s.resources = "demo/WSAssetViewSelectionIndicator.png","demo/WSAssetViewSelectionIndicator@2x.png", "video-icon-small@2x.png"
 end
