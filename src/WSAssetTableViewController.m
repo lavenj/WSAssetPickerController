@@ -44,47 +44,47 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    [super viewWillAppear:animated];
-    
-    self.wantsFullScreenLayout = YES;
-    
-    // Setup the toolbar if there are items in the navigationController's toolbarItems.
-    if (self.navigationController.toolbarItems.count > 0) {
-        self.toolbarItems = self.navigationController.toolbarItems;
-        [self.navigationController setToolbarHidden:NO animated:YES];
-    }
-    
-    self.assetPickerState.state = WSAssetPickerStatePickingAssets;
+	[super viewWillAppear:animated];
+
+	self.wantsFullScreenLayout = YES;
+
+	// Setup the toolbar if there are items in the navigationController's toolbarItems.
+	if (self.navigationController.toolbarItems.count > 0) {
+		self.toolbarItems = self.navigationController.toolbarItems;
+		[self.navigationController setToolbarHidden:NO animated:YES];
+	}
+
+	self.assetPickerState.state = WSAssetPickerStatePickingAssets;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    // Hide the toolbar in the event it's being displayed.
-    if (self.navigationController.toolbarItems.count > 0) {
-        [self.navigationController setToolbarHidden:YES animated:YES];
-    }
-    
-    [super viewWillDisappear:animated];
+	// Hide the toolbar in the event it's being displayed.
+	if (self.navigationController.toolbarItems.count > 0) {
+		[self.navigationController setToolbarHidden:YES animated:YES];
+	}
+
+	[super viewWillDisappear:animated];
 }
 
 
 - (void)viewDidLoad
 {
-    self.navigationItem.title = @"Loading";
-    
-	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone 
-                                                                                           target:self 
-                                                                                           action:@selector(doneButtonAction:)];
-    
-    
-    // TableView configuration.
-    self.tableView.contentInset = TABLEVIEW_INSETS;
-    self.tableView.separatorColor = [UIColor clearColor];
-    self.tableView.allowsSelection = NO;
-    
-    
-    // Fetch the assets.
-    [self fetchAssets];
+	self.navigationItem.title = @"Loading";
+
+	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+																																												 target:self
+																																												 action:@selector(doneButtonAction:)];
+
+
+	// TableView configuration.
+	self.tableView.contentInset = TABLEVIEW_INSETS;
+	self.tableView.separatorColor = [UIColor clearColor];
+	self.tableView.allowsSelection = NO;
+
+
+	// Fetch the assets.
+	[self fetchAssets];
 }
 
 
@@ -92,27 +92,27 @@
 
 - (NSMutableArray *)fetchedAssets
 {
-    if (!_fetchedAssets) {
-        _fetchedAssets = [NSMutableArray array];
-    }
-    return _fetchedAssets;
+	if (!_fetchedAssets) {
+		_fetchedAssets = [NSMutableArray array];
+	}
+	return _fetchedAssets;
 }
 
 - (NSInteger)assetsPerRow
 {
-    return MAX(1, (NSInteger)floorf(self.tableView.contentSize.width / ASSET_WIDTH_WITH_PADDING));
+	return MAX(1, (NSInteger)floorf(self.tableView.contentSize.width / ASSET_WIDTH_WITH_PADDING));
 }
 
 #pragma mark - Rotation
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-    return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
+	return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    [self.tableView reloadData];
+	[self.tableView reloadData];
 }
 
 
@@ -120,43 +120,43 @@
 
 - (void)fetchAssets
 {
-    // TODO: Listen to ALAssetsLibrary changes in order to update the library if it changes. 
-    // (e.g. if user closes, opens Photos and deletes/takes a photo, we'll get out of range/other error when they come back.
-    // IDEA: Perhaps the best solution, since this is a modal controller, is to close the modal controller.
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        
-        [self.assetsGroup enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
-            
-            if (!result || index == NSNotFound) {
-                
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self.tableView reloadData];
-                    self.navigationItem.title = [NSString stringWithFormat:@"%@", [self.assetsGroup valueForProperty:ALAssetsGroupPropertyName]];
-                });
-                
-                return;
-            }
-            
-            WSAssetWrapper *assetWrapper = [[WSAssetWrapper alloc] initWithAsset:result];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                
-                [self.fetchedAssets addObject:assetWrapper];
-                
-            });
-            
-        }];
-    });
+	// TODO: Listen to ALAssetsLibrary changes in order to update the library if it changes.
+	// (e.g. if user closes, opens Photos and deletes/takes a photo, we'll get out of range/other error when they come back.
+	// IDEA: Perhaps the best solution, since this is a modal controller, is to close the modal controller.
 
-    [self.tableView performSelector:@selector(reloadData) withObject:nil afterDelay:0.5];
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+
+		[self.assetsGroup enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
+
+			if (!result || index == NSNotFound) {
+
+				dispatch_async(dispatch_get_main_queue(), ^{
+					[self.tableView reloadData];
+					self.navigationItem.title = [NSString stringWithFormat:@"%@", [self.assetsGroup valueForProperty:ALAssetsGroupPropertyName]];
+				});
+
+				return;
+			}
+
+			WSAssetWrapper *assetWrapper = [[WSAssetWrapper alloc] initWithAsset:result];
+
+			dispatch_async(dispatch_get_main_queue(), ^{
+
+				[self.fetchedAssets addObject:assetWrapper];
+
+			});
+
+		}];
+	});
+
+	[self.tableView performSelector:@selector(reloadData) withObject:nil afterDelay:0.5];
 }
 
 #pragma mark - Actions
 
 - (void)doneButtonAction:(id)sender
-{     
-    self.assetPickerState.state = WSAssetPickerStatePickingDone;
+{
+	self.assetPickerState.state = WSAssetPickerStatePickingDone;
 }
 
 
@@ -164,41 +164,41 @@
 
 - (BOOL)assetsTableViewCell:(WSAssetsTableViewCell *)cell shouldSelectAssetAtColumn:(NSUInteger)column
 {
-    BOOL shouldSelectAsset = (self.assetPickerState.selectionLimit == 0 ||
-                              (self.assetPickerState.selectedCount < self.assetPickerState.selectionLimit));
-    
-    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-    NSUInteger assetIndex = indexPath.row * self.assetsPerRow + column;
-    
-    WSAssetWrapper *assetWrapper = [self.fetchedAssets objectAtIndex:assetIndex];
-    
-    if ((shouldSelectAsset == NO) && (assetWrapper.isSelected == NO))
-        self.assetPickerState.state = WSAssetPickerStateSelectionLimitReached;
-    else
-        self.assetPickerState.state = WSAssetPickerStatePickingAssets;
-    
-    return shouldSelectAsset;
+	BOOL shouldSelectAsset = (self.assetPickerState.selectionLimit == 0 ||
+														(self.assetPickerState.selectedCount < self.assetPickerState.selectionLimit));
+
+	NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+	NSUInteger assetIndex = indexPath.row * self.assetsPerRow + column;
+
+	WSAssetWrapper *assetWrapper = [self.fetchedAssets objectAtIndex:assetIndex];
+
+	if ((shouldSelectAsset == NO) && (assetWrapper.isSelected == NO))
+		self.assetPickerState.state = WSAssetPickerStateSelectionLimitReached;
+	else
+		self.assetPickerState.state = WSAssetPickerStatePickingAssets;
+
+	return shouldSelectAsset;
 }
 
 - (void)assetsTableViewCell:(WSAssetsTableViewCell *)cell didSelectAsset:(BOOL)selected atColumn:(NSUInteger)column
 {
-    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-    
-    // Calculate the index of the corresponding asset.
-    NSUInteger assetIndex = indexPath.row * self.assetsPerRow + column;
-    
-    WSAssetWrapper *assetWrapper = [self.fetchedAssets objectAtIndex:assetIndex];
-    assetWrapper.selected = selected;
-    
-    // Update the state object's selectedAssets.
-    [self.assetPickerState changeSelectionState:selected forAsset:assetWrapper.asset];
+	NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
 
-    // Update navigation bar with selected count and limit variables 
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (self.assetPickerState.selectionLimit) {
-            self.navigationItem.title = [NSString stringWithFormat:@"%@ (%u/%u)", [self.assetsGroup valueForProperty:ALAssetsGroupPropertyName], self.assetPickerState.selectedCount, self.assetPickerState.selectionLimit];
-        }
-    });
+	// Calculate the index of the corresponding asset.
+	NSUInteger assetIndex = indexPath.row * self.assetsPerRow + column;
+
+	WSAssetWrapper *assetWrapper = [self.fetchedAssets objectAtIndex:assetIndex];
+	assetWrapper.selected = selected;
+
+	// Update the state object's selectedAssets.
+	[self.assetPickerState changeSelectionState:selected forAsset:assetWrapper.asset];
+
+	// Update navigation bar with selected count and limit variables
+	dispatch_async(dispatch_get_main_queue(), ^{
+		if (self.assetPickerState.selectionLimit) {
+			self.navigationItem.title = [NSString stringWithFormat:@"%@ (%u/%u)", [self.assetsGroup valueForProperty:ALAssetsGroupPropertyName], self.assetPickerState.selectedCount, self.assetPickerState.selectionLimit];
+		}
+	});
 }
 
 
@@ -206,41 +206,41 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return (self.fetchedAssets.count + self.assetsPerRow - 1) / self.assetsPerRow;
+	return (self.fetchedAssets.count + self.assetsPerRow - 1) / self.assetsPerRow;
 }
 
 - (NSArray *)assetsForIndexPath:(NSIndexPath *)indexPath
-{    
-    NSRange assetRange;
-    assetRange.location = indexPath.row * self.assetsPerRow;
-    assetRange.length = self.assetsPerRow;
-    
-    // Prevent the range from exceeding the array length.
-    if (assetRange.length > self.fetchedAssets.count - assetRange.location) {
-        assetRange.length = self.fetchedAssets.count - assetRange.location;
-    }
-    
-    NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:assetRange];
-    
-    // Return the range of assets from fetchedAssets.
-    return [self.fetchedAssets objectsAtIndexes:indexSet];
+{
+	NSRange assetRange;
+	assetRange.location = indexPath.row * self.assetsPerRow;
+	assetRange.length = self.assetsPerRow;
+
+	// Prevent the range from exceeding the array length.
+	if (assetRange.length > self.fetchedAssets.count - assetRange.location) {
+		assetRange.length = self.fetchedAssets.count - assetRange.location;
+	}
+
+	NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:assetRange];
+
+	// Return the range of assets from fetchedAssets.
+	return [self.fetchedAssets objectsAtIndexes:indexSet];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *AssetCellIdentifier = @"WSAssetCell";
-    WSAssetsTableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:AssetCellIdentifier];
-    
-    if (cell == nil) {
-        
-        cell = [[WSAssetsTableViewCell alloc] initWithAssets:[self assetsForIndexPath:indexPath] reuseIdentifier:AssetCellIdentifier];        
-    } else {
-        
-        cell.cellAssetViews = [self assetsForIndexPath:indexPath];
-    }
-    cell.delegate = self;
-    
-    return cell;
+	static NSString *AssetCellIdentifier = @"WSAssetCell";
+	WSAssetsTableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:AssetCellIdentifier];
+
+	if (cell == nil) {
+
+		cell = [[WSAssetsTableViewCell alloc] initWithAssets:[self assetsForIndexPath:indexPath] reuseIdentifier:AssetCellIdentifier];
+	} else {
+
+		cell.cellAssetViews = [self assetsForIndexPath:indexPath];
+	}
+	cell.delegate = self;
+
+	return cell;
 }
 
 
@@ -248,8 +248,8 @@
 
 #define ROW_HEIGHT 79.0f
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath 
-{ 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
 	return ROW_HEIGHT;
 }
 
