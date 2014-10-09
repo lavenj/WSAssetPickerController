@@ -40,145 +40,145 @@
 
 - (id)initWithAssetsLibrary:(ALAssetsLibrary *)assetsLibrary
 {
-    self = [super init];
-    if (self) {
-        [self commonInit];
-        self.assetPickerState.assetsLibrary = assetsLibrary;
-    }
-    
-    return self;
+	self = [super init];
+	if (self) {
+		[self commonInit];
+		self.assetPickerState.assetsLibrary = assetsLibrary;
+	}
+
+	return self;
 }
 
 - (id)initWithDelegate:(id <WSAssetPickerControllerDelegate>)delegate;
 {
-    self = [[[self class] alloc] initWithAssetsLibrary:nil];
-    if (self) {
-        self.delegate = delegate;
-    }
-    return self;
+	self = [[[self class] alloc] initWithAssetsLibrary:nil];
+	if (self) {
+		self.delegate = delegate;
+	}
+	return self;
 }
 
 - (void)commonInit
 {
-    WSAlbumTableViewController *albumTableViewController = [[WSAlbumTableViewController alloc] initWithStyle:UITableViewStylePlain];
-    [self setViewControllers:@[albumTableViewController] animated:NO];
-    self.navigationBar.barStyle = UIBarStyleBlackTranslucent;
-    self.toolbar.barStyle = UIBarStyleBlackTranslucent;
-    albumTableViewController.assetPickerState = self.assetPickerState;
+	WSAlbumTableViewController *albumTableViewController = [[WSAlbumTableViewController alloc] initWithStyle:UITableViewStylePlain];
+	[self setViewControllers:@[albumTableViewController] animated:NO];
+	self.navigationBar.barStyle = UIBarStyleBlackTranslucent;
+	self.toolbar.barStyle = UIBarStyleBlackTranslucent;
+	albumTableViewController.assetPickerState = self.assetPickerState;
 }
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder
 {
-    self = [super initWithCoder:aDecoder];
-    if (self) {
-        [self commonInit];
-    }
-    return self;
+	self = [super initWithCoder:aDecoder];
+	if (self) {
+		[self commonInit];
+	}
+	return self;
 }
 
 - (void)setAssetsLibrary:(ALAssetsLibrary *)assetsLibrary
 {
-    NSParameterAssert(assetsLibrary);
-    self.assetPickerState.assetsLibrary = assetsLibrary;
+	NSParameterAssert(assetsLibrary);
+	self.assetPickerState.assetsLibrary = assetsLibrary;
 }
 
 #pragma mark - Accessors -
 
 - (WSAssetPickerState *)assetPickerState
 {
-    if (!_assetPickerState) {
-        _assetPickerState = [[WSAssetPickerState alloc] init];
-    }
-    return _assetPickerState;
+	if (!_assetPickerState) {
+		_assetPickerState = [[WSAssetPickerState alloc] init];
+	}
+	return _assetPickerState;
 }
 
 - (void)setSelectionLimit:(NSInteger)selectionLimit
 {
-    if (_selectionLimit != selectionLimit) {
-        _selectionLimit = selectionLimit;
-        self.assetPickerState.selectionLimit = _selectionLimit;
-    }
+	if (_selectionLimit != selectionLimit) {
+		_selectionLimit = selectionLimit;
+		self.assetPickerState.selectionLimit = _selectionLimit;
+	}
 }
 
 - (NSArray *)selectedAssets
 {
-    return self.assetPickerState.selectedAssets;
+	return self.assetPickerState.selectedAssets;
 }
 
 #pragma mark - Overrides -
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    [super viewWillAppear:animated];
-    
-    NSAssert(self.assetPickerState.assetsLibrary, @"An assets library must be provided.");
-    NSAssert(self.delegate, @"A delegate must be provided");
-    
-    self.originalStatusBarStyle = [UIApplication sharedApplication].statusBarStyle;
-    
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackTranslucent animated:YES];
-    
-    // Start observing state changes and selectedCount changes.
-    [_assetPickerState addObserver:self forKeyPath:STATE_KEY options:NSKeyValueObservingOptionNew context:NULL];
-    [_assetPickerState addObserver:self forKeyPath:SELECTED_COUNT_KEY options:NSKeyValueObservingOptionNew context:NULL];
+	[super viewWillAppear:animated];
+
+	NSAssert(self.assetPickerState.assetsLibrary, @"An assets library must be provided.");
+	NSAssert(self.delegate, @"A delegate must be provided");
+
+	self.originalStatusBarStyle = [UIApplication sharedApplication].statusBarStyle;
+
+	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackTranslucent animated:YES];
+
+	// Start observing state changes and selectedCount changes.
+	[_assetPickerState addObserver:self forKeyPath:STATE_KEY options:NSKeyValueObservingOptionNew context:NULL];
+	[_assetPickerState addObserver:self forKeyPath:SELECTED_COUNT_KEY options:NSKeyValueObservingOptionNew context:NULL];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    [super viewWillDisappear:animated];
-    
-    [[UIApplication sharedApplication] setStatusBarStyle:self.originalStatusBarStyle animated:YES];
-    
-    // Stop observing state changes and selectedCount changes.
-    [_assetPickerState removeObserver:self forKeyPath:STATE_KEY];
-    [_assetPickerState removeObserver:self forKeyPath:SELECTED_COUNT_KEY];
+	[super viewWillDisappear:animated];
+
+	[[UIApplication sharedApplication] setStatusBarStyle:self.originalStatusBarStyle animated:YES];
+
+	// Stop observing state changes and selectedCount changes.
+	[_assetPickerState removeObserver:self forKeyPath:STATE_KEY];
+	[_assetPickerState removeObserver:self forKeyPath:SELECTED_COUNT_KEY];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{    
-    if (![object isEqual:self.assetPickerState]) return;
-    
-    if ([STATE_KEY isEqualToString:keyPath]) {     
-        
-        // Cast the delegate to the assetPickerDelegate.
-        id <WSAssetPickerControllerDelegate> delegate = (id <WSAssetPickerControllerDelegate>)self.delegate;
-        
-        if (WSAssetPickerStatePickingCancelled == self.assetPickerState.state) {
-            if ([delegate respondsToSelector:@selector(assetPickerControllerDidCancel:)]) {
-                [delegate assetPickerControllerDidCancel:self];
-            }
-        } else if (WSAssetPickerStatePickingDone == self.assetPickerState.state) {
-            if ([delegate respondsToSelector:@selector(assetPickerController:didFinishPickingMediaWithAssets:)]) {
-                [delegate assetPickerController:self didFinishPickingMediaWithAssets:self.assetPickerState.selectedAssets];
-            }
-        } else if (WSAssetPickerStateSelectionLimitReached == self.assetPickerState.state) {
-            if ([delegate respondsToSelector:@selector(assetPickerControllerDidLimitSelection:)]) {
-                [delegate assetPickerControllerDidLimitSelection:self];
-            }
-        }
-        else if (WSAssetPickerStateAccessError == self.assetPickerState.state) {
-            //tells the delegate that we found an access error
-            if ([delegate respondsToSelector:@selector(assetPickerControllerFoundAccessError:)]) {
-                [delegate assetPickerControllerFoundAccessError:self];
-            }
-        }
-        else if (WSAssetPickerStateError == self.assetPickerState.state) {
-            if ([delegate respondsToSelector:@selector(assetPickerControllerFoundError:)]) {
-                [delegate assetPickerControllerFoundError:self];
-            }
-        }
+{
+	if (![object isEqual:self.assetPickerState]) return;
 
-    } else if ([SELECTED_COUNT_KEY isEqualToString:keyPath]) {
-        
-        self.selectedCount = self.assetPickerState.selectedCount;
-    }
+	if ([STATE_KEY isEqualToString:keyPath]) {
+
+		// Cast the delegate to the assetPickerDelegate.
+		id <WSAssetPickerControllerDelegate> delegate = (id <WSAssetPickerControllerDelegate>)self.delegate;
+
+		if (WSAssetPickerStatePickingCancelled == self.assetPickerState.state) {
+			if ([delegate respondsToSelector:@selector(assetPickerControllerDidCancel:)]) {
+				[delegate assetPickerControllerDidCancel:self];
+			}
+		} else if (WSAssetPickerStatePickingDone == self.assetPickerState.state) {
+			if ([delegate respondsToSelector:@selector(assetPickerController:didFinishPickingMediaWithAssets:)]) {
+				[delegate assetPickerController:self didFinishPickingMediaWithAssets:self.assetPickerState.selectedAssets];
+			}
+		} else if (WSAssetPickerStateSelectionLimitReached == self.assetPickerState.state) {
+			if ([delegate respondsToSelector:@selector(assetPickerControllerDidLimitSelection:)]) {
+				[delegate assetPickerControllerDidLimitSelection:self];
+			}
+		}
+		else if (WSAssetPickerStateAccessError == self.assetPickerState.state) {
+			//tells the delegate that we found an access error
+			if ([delegate respondsToSelector:@selector(assetPickerControllerFoundAccessError:)]) {
+				[delegate assetPickerControllerFoundAccessError:self];
+			}
+		}
+		else if (WSAssetPickerStateError == self.assetPickerState.state) {
+			if ([delegate respondsToSelector:@selector(assetPickerControllerFoundError:)]) {
+				[delegate assetPickerControllerFoundError:self];
+			}
+		}
+
+	} else if ([SELECTED_COUNT_KEY isEqualToString:keyPath]) {
+
+		self.selectedCount = self.assetPickerState.selectedCount;
+	}
 }
 
 #pragma mark - Rotation
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-    return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
+	return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
 }
 
 @end

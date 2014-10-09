@@ -38,11 +38,11 @@
 
 - (NSMutableArray *)assetGroups
 {
-    if (!_assetGroups) {
-        _assetGroups = [NSMutableArray array];
-    }
-    
-    return _assetGroups;
+	if (!_assetGroups) {
+		_assetGroups = [NSMutableArray array];
+	}
+
+	return _assetGroups;
 }
 
 #pragma mark - View Lifecycle
@@ -50,52 +50,52 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    [super viewWillAppear:animated];
-    
-    self.wantsFullScreenLayout = YES;
-    
-    self.assetPickerState.state = WSAssetPickerStatePickingAlbum;
+	[super viewWillAppear:animated];
+
+	self.wantsFullScreenLayout = YES;
+
+	self.assetPickerState.state = WSAssetPickerStatePickingAlbum;
 }
 
 
 - (void)viewDidLoad
 {
-    [super viewDidLoad];
+	[super viewDidLoad];
 
-    self.navigationItem.title = @"Loading…";
-    
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel 
-                                                                                           target:self 
-                                                                                           action:@selector(cancelButtonAction:)];
-    
-    [self.assetPickerState.assetsLibrary enumerateGroupsWithTypes:ALAssetsGroupAll usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-        
-        // If group is nil, the end has been reached.
-        if (group == nil) {
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.navigationItem.title = @"Albums";
-            });
-            return;
-        }
-        
-        // Add the group to the array.
-        [self.assetGroups addObject:group];
-        
-        // Reload the tableview on the main thread.
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.tableView reloadData];
-        });
-        
-    } failureBlock:^(NSError *error) {
-        if (error.code == ALAssetsLibraryAccessUserDeniedError) {
-            [self.assetPickerState setState:WSAssetPickerStateAccessError];
-        }else{
-            //Generic error is being reported here.
-            [self.assetPickerState setState:WSAssetPickerStateError];
-        }
-        // TODO: handle any other error
-    }];
+	self.navigationItem.title = @"Loading…";
+
+	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+																																												 target:self
+																																												 action:@selector(cancelButtonAction:)];
+
+	[self.assetPickerState.assetsLibrary enumerateGroupsWithTypes:ALAssetsGroupAll usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+
+		// If group is nil, the end has been reached.
+		if (group == nil) {
+
+			dispatch_async(dispatch_get_main_queue(), ^{
+				self.navigationItem.title = @"Albums";
+			});
+			return;
+		}
+
+		// Add the group to the array.
+		[self.assetGroups addObject:group];
+
+		// Reload the tableview on the main thread.
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[self.tableView reloadData];
+		});
+
+	} failureBlock:^(NSError *error) {
+		if (error.code == ALAssetsLibraryAccessUserDeniedError) {
+			[self.assetPickerState setState:WSAssetPickerStateAccessError];
+		}else{
+			//Generic error is being reported here.
+			[self.assetPickerState setState:WSAssetPickerStateError];
+		}
+		// TODO: handle any other error
+	}];
 }
 
 
@@ -103,15 +103,15 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-    return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
+	return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
 }
 
 
 #pragma  mark - Actions
 
-- (void)cancelButtonAction:(id)sender 
-{    
-    self.assetPickerState.state = WSAssetPickerStatePickingCancelled;
+- (void)cancelButtonAction:(id)sender
+{
+	self.assetPickerState.state = WSAssetPickerStatePickingCancelled;
 }
 
 
@@ -119,28 +119,28 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self.assetGroups count];
+	return [self.assetGroups count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"WSAlbumCell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-    }
-    
-    // Get the group from the datasource.
-    ALAssetsGroup *group = [self.assetGroups objectAtIndex:indexPath.row];
-    [group setAssetsFilter:[ALAssetsFilter allPhotos]]; // TODO: Make this a delegate choice.
-    
-    // Setup the cell.
-    cell.textLabel.text = [NSString stringWithFormat:@"%@ (%d)", [group valueForProperty:ALAssetsGroupPropertyName], [group numberOfAssets]];
-    cell.imageView.image = [UIImage imageWithCGImage:[group posterImage]];
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    
-    return cell;
+	static NSString *CellIdentifier = @"WSAlbumCell";
+	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+
+	if (cell == nil) {
+		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+	}
+
+	// Get the group from the datasource.
+	ALAssetsGroup *group = [self.assetGroups objectAtIndex:indexPath.row];
+	[group setAssetsFilter:[ALAssetsFilter allPhotos]]; // TODO: Make this a delegate choice.
+
+	// Setup the cell.
+	cell.textLabel.text = [NSString stringWithFormat:@"%@ (%d)", [group valueForProperty:ALAssetsGroupPropertyName], [group numberOfAssets]];
+	cell.imageView.image = [UIImage imageWithCGImage:[group posterImage]];
+	cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+
+	return cell;
 }
 
 
@@ -148,20 +148,20 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    ALAssetsGroup *group = [self.assetGroups objectAtIndex:indexPath.row];
-    [group setAssetsFilter:[ALAssetsFilter allPhotos]]; // TODO: Make this a delegate choice.
-    
-    WSAssetTableViewController *assetTableViewController = [[WSAssetTableViewController alloc] initWithStyle:UITableViewStylePlain];
-    assetTableViewController.assetPickerState = self.assetPickerState;
-    assetTableViewController.assetsGroup = group;
-    
-    [self.navigationController pushViewController:assetTableViewController animated:YES];
+	ALAssetsGroup *group = [self.assetGroups objectAtIndex:indexPath.row];
+	[group setAssetsFilter:[ALAssetsFilter allPhotos]]; // TODO: Make this a delegate choice.
+
+	WSAssetTableViewController *assetTableViewController = [[WSAssetTableViewController alloc] initWithStyle:UITableViewStylePlain];
+	assetTableViewController.assetPickerState = self.assetPickerState;
+	assetTableViewController.assetsGroup = group;
+
+	[self.navigationController pushViewController:assetTableViewController animated:YES];
 }
 
 #define ROW_HEIGHT 57.0f
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath 
-{	
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
 	return ROW_HEIGHT;
 }
 
