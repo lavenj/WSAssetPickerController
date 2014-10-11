@@ -88,7 +88,14 @@
 		WSAssetViewColumn *assetViewColumn = [[WSAssetViewColumn alloc] initWithImage:[UIImage imageWithCGImage:assetWrapper.asset.thumbnail] isVideo:isVideo] ;
 		assetViewColumn.column = [assets indexOfObject:assetWrapper];
 		assetViewColumn.selected = assetWrapper.isSelected;
+		if (isVideo) {
+			NSNumber* duration = [assetWrapper.asset valueForProperty:ALAssetPropertyDuration];
+			int seconds = (int)ceil(duration.doubleValue);
+			int minutes = seconds / 60;
+			seconds = seconds % 60;
 
+			assetViewColumn.durationLabel.text = [NSString stringWithFormat:@"%d:%02d", minutes, seconds];
+		}
 
 		__weak __typeof__(self) weakSelf = self;
 		[assetViewColumn setShouldSelectItemBlock:^BOOL(NSInteger column) {

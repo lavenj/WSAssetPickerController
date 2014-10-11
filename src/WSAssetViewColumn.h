@@ -23,6 +23,7 @@
 
 @property (nonatomic) NSUInteger column;
 @property (nonatomic, getter=isSelected) BOOL selected;
+@property (nonatomic, weak) UILabel* durationLabel;
 
 + (WSAssetViewColumn *)assetViewWithImage:(UIImage *)thumbnail isVideo:(BOOL)isVideo;
 

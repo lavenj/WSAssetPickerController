@@ -36,7 +36,7 @@
 #pragma mark - Initialization
 
 #define WS_ASSET_VIEW_FRAME CGRectMake(0, 0, 75, 75)
-#define WS_ASSET_VIEW_VIDEO_BG_HEIGHT 20
+#define WS_ASSET_VIEW_VIDEO_BG_HEIGHT 17
 + (WSAssetViewColumn *)assetViewWithImage:(UIImage *)thumbnail isVideo:(BOOL)isVideo {
 	WSAssetViewColumn *assetView = [[WSAssetViewColumn alloc] initWithImage:thumbnail isVideo:isVideo];
 
@@ -63,8 +63,18 @@
 			overlay.backgroundColor = [UIColor colorWithWhite:0 alpha:0.3];
 			[self addSubview:overlay];
 			UIImageView *videoIconImageView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"video-icon-small"]];
-			videoIconImageView.center = CGPointMake(12, 65);
-			[self addSubview:videoIconImageView];
+			videoIconImageView.center = CGPointMake(12, overlay.bounds.size.height/2);
+			[overlay addSubview:videoIconImageView];
+			UILabel* duration = [[UILabel alloc] initWithFrame:CGRectMake(0, 1, 71, 15)];
+			duration.textAlignment = NSTextAlignmentRight;
+			duration.font = [UIFont boldSystemFontOfSize:12];
+			duration.textColor = [UIColor whiteColor];
+			duration.backgroundColor = [UIColor clearColor];
+			duration.text = @"0:10";
+			[overlay addSubview:duration];
+			self.durationLabel = duration;
+
+
 		}
 	}
 	return self;
